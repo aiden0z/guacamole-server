@@ -197,6 +197,10 @@ rfbClient* guac_vnc_get_client(guac_client* client) {
     if (vnc_settings->encodings)
         rfb_client->appData.encodingsString = strdup(vnc_settings->encodings);
 
+    /* Only use basic vnc auth, avoid to enable tls auth */
+    uint32_t auth_schemas[] = {rfbVncAuth};
+    SetClientAuthSchemes(rfb_client, auth_schemas, 1);
+
     /* Connect */
     if (rfbInitClient(rfb_client, NULL, NULL))
         return rfb_client;

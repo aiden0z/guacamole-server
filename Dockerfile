@@ -54,7 +54,9 @@ ARG BUILD_DEPENDENCIES="              \
         make"
 
 # Bring build environment up to date and install build dependencies
-RUN apt-get update                         && \
+RUN sed -i 's#deb.debian.org#mirrors.huaweicloud.com#g' /etc/apt/sources.list ;\
+    sed -i 's#security.debian.org#mirrors.huaweicloud.com#g' /etc/apt/sources.list ;\
+    apt-get update                         && \
     apt-get install -y $BUILD_DEPENDENCIES && \
     rm -rf /var/lib/apt/lists/*
 
@@ -100,9 +102,12 @@ ARG RUNTIME_DEPENDENCIES="            \
 COPY --from=builder ${PREFIX_DIR} ${PREFIX_DIR}
 
 # Bring runtime environment up to date and install runtime dependencies
-RUN apt-get update                                          && \
+RUN sed -i 's#deb.debian.org#mirrors.huaweicloud.com#g' /etc/apt/sources.list ;\
+    sed -i 's#security.debian.org#mirrors.huaweicloud.com#g' /etc/apt/sources.list ;\
+    apt-get update                                          && \
     apt-get install -y $RUNTIME_DEPENDENCIES                && \
     apt-get install -y $(cat "${PREFIX_DIR}"/DEPENDENCIES)  && \
+    apt-get install -y rsyslog && \
     rm -rf /var/lib/apt/lists/*
 
 # Link FreeRDP plugins into proper path
@@ -117,5 +122,5 @@ EXPOSE 4822
 # Note the path here MUST correspond to the value specified in the 
 # PREFIX_DIR build argument.
 #
-CMD /usr/local/guacamole/sbin/guacd -b 0.0.0.0 -L $GUACD_LOG_LEVEL -f
+CMD service rsyslog start && /usr/local/guacamole/sbin/guacd -b 0.0.0.0 -L $GUACD_LOG_LEVEL -f
 
