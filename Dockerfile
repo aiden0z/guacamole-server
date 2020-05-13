@@ -96,10 +96,14 @@ ARG RUNTIME_DEPENDENCIES="            \
         ghostscript                   \
         fonts-liberation              \
         fonts-dejavu                  \
-        xfonts-terminus"
+        xfonts-terminus              \
+        gdb                           \
+        procps"
 
 # Copy build artifacts into this stage
 COPY --from=builder ${PREFIX_DIR} ${PREFIX_DIR}
+# Keep source code for gdb debug
+COPY --from=builder /tmp/guacd-docker-BUILD /tmp/guacd-docker-BUILD
 
 # Bring runtime environment up to date and install runtime dependencies
 RUN sed -i 's#deb.debian.org#mirrors.huaweicloud.com#g' /etc/apt/sources.list ;\
