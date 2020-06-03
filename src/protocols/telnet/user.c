@@ -72,6 +72,11 @@ int guac_telnet_user_join_handler(guac_user* user, int argc, char** argv) {
 
     /* If not owner, synchronize with current display */
     else {
+        /* check if the client is running or finish initializing */
+        if (user->client->state != GUAC_CLIENT_RUNNING || !telnet_client->term) {
+            guac_user_log(user, GUAC_LOG_ERROR, "The guac client is not in running state or the telnet client is not finish initializing.");
+            return 1;
+        }
         guac_terminal_dup(telnet_client->term, user, user->socket);
         guac_telnet_send_current_argv(user, telnet_client);
         guac_socket_flush(user->socket);

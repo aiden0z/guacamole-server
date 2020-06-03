@@ -83,6 +83,11 @@ int guac_rdp_user_join_handler(guac_user* user, int argc, char** argv) {
 
     /* If not owner, synchronize with current state */
     else {
+        /* check if the client is running or finish initializing */
+        if (user->client->state != GUAC_CLIENT_RUNNING || !rdp_client->display) {
+            guac_user_log(user, GUAC_LOG_ERROR, "The guac client is not in running state or the rdp client is not finish initializing.");
+            return 1;
+        }
 
         /* Synchronize any audio stream */
         if (rdp_client->audio)

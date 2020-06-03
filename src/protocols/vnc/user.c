@@ -76,6 +76,12 @@ int guac_vnc_user_join_handler(guac_user* user, int argc, char** argv) {
     /* If not owner, synchronize with current state */
     else {
 
+        /* check if the client is running or finish initializing */
+        if (user->client->state != GUAC_CLIENT_RUNNING || !vnc_client->display) {
+            guac_user_log(user, GUAC_LOG_ERROR, "The guac client is not in running state or the vnc client is not finish initializing.");
+            return 1;
+        }
+
 #ifdef ENABLE_PULSE
         /* Synchronize an audio stream */
         if (vnc_client->audio)

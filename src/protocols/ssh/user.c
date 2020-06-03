@@ -73,6 +73,13 @@ int guac_ssh_user_join_handler(guac_user* user, int argc, char** argv) {
 
     /* If not owner, synchronize with current display */
     else {
+
+        /* check if the client is running or finish initializing */
+        if (user->client->state != GUAC_CLIENT_RUNNING || !ssh_client->term) {
+            guac_user_log(user, GUAC_LOG_ERROR, "The guac client is not in running state or the ssh client is not finish initializing.");
+            return 1;
+        }
+
         guac_terminal_dup(ssh_client->term, user, user->socket);
         guac_ssh_send_current_argv(user, ssh_client);
         guac_socket_flush(user->socket);
